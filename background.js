@@ -8,6 +8,8 @@ const defaultFilters = [
 
 chrome.runtime.onInstalled.addListener(() => {
   setupRules();
+  // Initialize storage logs
+  chrome.storage.local.set({ logs: [], blockCount: 0, leakCount: 0 });
 });
 
 async function setupRules() {
@@ -30,10 +32,10 @@ async function setupRules() {
     removeRuleIds,
     addRules: rules
   });
-  console.log("Anti-Surveillance network rules initialized successfully.");
+  console.log("AnonyArmour network firewall rules initialized.");
 }
 
-// Simple message listener for content script requests
+// Log telemetry interception events
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "getSettings") {
     chrome.storage.local.get({
@@ -42,16 +44,41 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       canvas: true,
       audio: true,
       webdriver: true,
-      biometrics: true
+      biometrics: true,
+      screen: true
     }, (items) => {
       sendResponse(items);
     });
-    return true; // Keep message channel open for async response
+    return true; 
   }
+  
   if (message.action === "logDetection") {
-    // Increment telemetry block / detection counter
-    chrome.storage.local.get({ blockCount: 0 }, (result) => {
-      chrome.storage.local.set({ blockCount: result.blockCount + 1 });
+    const timestamp = new Date().toISOString();
+    const isSecured = message.details.secured !== false; // Check if the module was enabled
+    
+    chrome.storage.local.get({ logs: [], blockCount: 0, leakCount: 0 }, (result) => {
+      let logs = result.logs || [];
+      let blockCount = result.blockCount;
+      let leakCount = result.leakCount;
+      
+      const newLog = {
+        timestamp,
+        metric: message.details.metric || message.details,
+        url: sender.tab ? sender.tab.url : "Background Context",
+        status: isSecured ? "DEFENDED" : "EXFILTRATED"
+      };
+      
+      logs.push(newLog);
+      // Keep last 100 entries to prevent storage bloat
+      if (logs.length > 100) logs.shift();
+      
+      if (isSecured) {
+        blockCount++;
+      } else {
+        leakCount++;
+      }
+      
+      chrome.storage.local.set({ logs, blockCount, leakCount });
     });
   }
 });

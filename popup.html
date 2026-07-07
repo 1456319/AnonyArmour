@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>De-Surveillance Shield</title>
+  <title>AnonyArmour Shield</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -11,9 +11,9 @@
       --bg-primary: #0a0b0d;
       --bg-card: rgba(20, 22, 26, 0.7);
       --border-color: rgba(255, 255, 255, 0.08);
-      --accent: #ff4757;
-      --accent-glow: rgba(255, 71, 87, 0.4);
-      --success: #2ed573;
+      --accent-red: #ff4757;
+      --accent-orange: #ffa502;
+      --accent-green: #2ed573;
       --text-primary: #ffffff;
       --text-secondary: #a4b0be;
     }
@@ -46,9 +46,9 @@
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      background-color: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-      animation: pulse 2s infinite;
+      background-color: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+      transition: all 0.3s ease;
     }
     
     h1 {
@@ -73,38 +73,79 @@
       gap: 16px;
     }
     
-    .counter-card {
+    /* Live Status Banner */
+    .status-banner {
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    
+    .status-secure {
+      background: rgba(46, 213, 115, 0.1);
+      border-color: rgba(46, 213, 115, 0.3);
+      color: var(--accent-green);
+      text-shadow: 0 0 8px rgba(46, 213, 115, 0.3);
+    }
+    
+    .status-defended {
+      background: rgba(255, 165, 2, 0.1);
+      border-color: rgba(255, 165, 2, 0.3);
+      color: var(--accent-orange);
+      text-shadow: 0 0 8px rgba(255, 165, 2, 0.3);
+    }
+    
+    .status-exfiltrated {
+      background: rgba(255, 71, 87, 0.1);
+      border-color: rgba(255, 71, 87, 0.3);
+      color: var(--accent-red);
+      text-shadow: 0 0 8px rgba(255, 71, 87, 0.3);
+    }
+    
+    /* Stat Cards Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .stat-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 16px;
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-    
-    .counter-label {
-      font-size: 13px;
-      color: var(--text-secondary);
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      align-items: center;
+      gap: 4px;
     }
     
-    .counter-label span {
-      font-weight: 600;
-      color: var(--text-primary);
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
     }
     
-    .counter-val {
-      font-size: 28px;
+    .stat-val {
+      font-size: 22px;
       font-weight: 700;
-      color: var(--accent);
-      text-shadow: 0 0 8px var(--accent-glow);
     }
     
+    .val-defended {
+      color: var(--accent-orange);
+    }
+    
+    .val-exfiltrated {
+      color: var(--accent-red);
+    }
+    
+    /* List of protection options */
     .module-list {
       display: flex;
       flex-direction: column;
@@ -123,7 +164,7 @@
     }
     
     .module-row:hover {
-      border-color: rgba(255, 71, 87, 0.2);
+      border-color: rgba(255, 255, 255, 0.15);
     }
     
     .module-info {
@@ -142,6 +183,7 @@
       color: var(--text-secondary);
     }
     
+    /* Toggle switch */
     .switch {
       position: relative;
       display: inline-block;
@@ -181,7 +223,7 @@
     }
     
     input:checked + .slider {
-      background-color: var(--success);
+      background-color: var(--accent-green);
       box-shadow: 0 0 8px rgba(46, 213, 115, 0.3);
     }
     
@@ -190,12 +232,19 @@
       background-color: var(--text-primary);
     }
     
-    .btn-reset {
+    /* Action buttons */
+    .actions-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .btn {
       font-family: inherit;
       background: rgba(255,255,255,0.05);
       border: 1px solid var(--border-color);
       color: var(--text-secondary);
-      padding: 8px 12px;
+      padding: 10px;
       border-radius: 8px;
       font-size: 11px;
       font-weight: 600;
@@ -205,51 +254,59 @@
       text-align: center;
     }
     
-    .btn-reset:hover {
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-accent {
       background: rgba(255, 71, 87, 0.1);
-      border-color: var(--accent);
-      color: var(--accent);
+      border-color: rgba(255, 71, 87, 0.2);
+      color: var(--accent-red);
+    }
+    
+    .btn-accent:hover {
+      background: rgba(255, 71, 87, 0.2);
+      border-color: var(--accent-red);
+      color: var(--text-primary);
     }
 
     .footer-sentiment {
       font-size: 10px;
       color: rgba(255, 71, 87, 0.5);
       text-align: center;
-      margin-top: 10px;
+      margin-top: 6px;
       letter-spacing: 0.5px;
       font-style: italic;
       text-transform: uppercase;
-    }
-
-    @keyframes pulse {
-
-      0% {
-        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
-      }
-      70% {
-        box-shadow: 0 0 0 6px rgba(255, 71, 87, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
-      }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo-container">
-      <div class="logo-glow"></div>
-      <h1>Surveillance Shield</h1>
+      <div class="logo-glow" id="logoGlow"></div>
+      <h1>AnonyArmour</h1>
     </div>
-    <span class="version">v1.1</span>
+    <span class="version">v1.2</span>
   </header>
   <div class="container">
-    <div class="counter-card">
-      <div class="counter-label">
-        <span>Blocked Telemetry</span>
-        Anti-surveillance active
+    <!-- Live Status Banner -->
+    <div class="status-banner status-secure" id="statusBanner">
+      SYSTEM SECURE
+    </div>
+
+    <!-- Counters block -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-label">Defended</span>
+        <span class="stat-val val-defended" id="blockCount">0</span>
       </div>
-      <div class="counter-val" id="blockCount">0</div>
+      <div class="stat-card">
+        <span class="stat-label">Exfiltrated</span>
+        <span class="stat-val val-exfiltrated" id="leakCount">0</span>
+      </div>
     </div>
     
     <div class="module-list">
@@ -331,7 +388,10 @@
       </div>
     </div>
     
-    <button class="btn-reset" id="resetBtn">Reset Block Counter</button>
+    <div class="actions-row">
+      <button class="btn" id="exportReportBtn">Export Local Audit Report</button>
+      <button class="btn btn-accent" id="resetBtn">Reset Counter & Logs</button>
+    </div>
     <div class="footer-sentiment">Anonymity is a right, not a privilege.</div>
   </div>
   <script src="popup.js"></script>
