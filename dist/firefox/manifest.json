@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "De-Surveillance & Fingerprint Shield",
-  "version": "1.1.0",
+  "name": "AnonyArmour - Firefox Shield",
+  "version": "1.2.0",
   "description": "Modular anti-surveillance extension that blocks identity queries and spoofs fingerprinting metrics.",
   "permissions": [
     "declarativeNetRequest",
@@ -11,7 +11,7 @@
     "<all_urls>"
   ],
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
@@ -23,5 +23,11 @@
   ],
   "action": {
     "default_popup": "popup.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{c2f5f4d0-5f63-4abf-8a13-2f6f876f95df}",
+      "strict_min_version": "109.0"
+    }
   }
 }

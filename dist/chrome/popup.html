@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AnonyArmour Shield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0b0d;
+      --bg-card: rgba(20, 22, 26, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --accent-red: #ff4757;
+      --accent-orange: #ffa502;
+      --accent-green: #2ed573;
+      --text-primary: #ffffff;
+      --text-secondary: #a4b0be;
+    }
+    
+    body {
+      width: 320px;
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    
+    header {
+      background: linear-gradient(135deg, #1e2026 0%, #0f1115 100%);
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo-glow {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+      transition: all 0.3s ease;
+    }
+    
+    h1 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+    
+    .version {
+      font-size: 10px;
+      color: var(--text-secondary);
+      background: rgba(255,255,255,0.05);
+      padding: 2px 6px;
+      border-radius: 20px;
+    }
+    
+    .container {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    /* Live Status Banner */
+    .status-banner {
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    
+    .status-secure {
+      background: rgba(46, 213, 115, 0.1);
+      border-color: rgba(46, 213, 115, 0.3);
+      color: var(--accent-green);
+      text-shadow: 0 0 8px rgba(46, 213, 115, 0.3);
+    }
+    
+    .status-defended {
+      background: rgba(255, 165, 2, 0.1);
+      border-color: rgba(255, 165, 2, 0.3);
+      color: var(--accent-orange);
+      text-shadow: 0 0 8px rgba(255, 165, 2, 0.3);
+    }
+    
+    .status-exfiltrated {
+      background: rgba(255, 71, 87, 0.1);
+      border-color: rgba(255, 71, 87, 0.3);
+      color: var(--accent-red);
+      text-shadow: 0 0 8px rgba(255, 71, 87, 0.3);
+    }
+    
+    /* Stat Cards Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+    
+    .stat-val {
+      font-size: 22px;
+      font-weight: 700;
+    }
+    
+    .val-defended {
+      color: var(--accent-orange);
+    }
+    
+    .val-exfiltrated {
+      color: var(--accent-red);
+    }
+    
+    /* List of protection options */
+    .module-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .module-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+    
+    .module-row:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .module-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    
+    .module-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .module-desc {
+      font-size: 10px;
+      color: var(--text-secondary);
+    }
+    
+    /* Toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 38px;
+      height: 20px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255,255,255,0.1);
+      transition: .3s;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--text-secondary);
+      transition: .3s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--accent-green);
+      box-shadow: 0 0 8px rgba(46, 213, 115, 0.3);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(18px);
+      background-color: var(--text-primary);
+    }
+    
+    /* Action buttons */
+    .actions-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .btn {
+      font-family: inherit;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-accent {
+      background: rgba(255, 71, 87, 0.1);
+      border-color: rgba(255, 71, 87, 0.2);
+      color: var(--accent-red);
+    }
+    
+    .btn-accent:hover {
+      background: rgba(255, 71, 87, 0.2);
+      border-color: var(--accent-red);
+      color: var(--text-primary);
+    }
+
+    .footer-sentiment {
+      font-size: 10px;
+      color: rgba(255, 71, 87, 0.5);
+      text-align: center;
+      margin-top: 6px;
+      letter-spacing: 0.5px;
+      font-style: italic;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <div class="logo-glow" id="logoGlow"></div>
+      <h1>AnonyArmour</h1>
+    </div>
+    <span class="version">v1.2</span>
+  </header>
+  <div class="container">
+    <!-- Live Status Banner -->
+    <div class="status-banner status-secure" id="statusBanner">
+      SYSTEM SECURE
+    </div>
+
+    <!-- Counters block -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-label">Defended</span>
+        <span class="stat-val val-defended" id="blockCount">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Exfiltrated</span>
+        <span class="stat-val val-exfiltrated" id="leakCount">0</span>
+      </div>
+    </div>
+    
+    <div class="module-list">
+      <div class="module-row">
+        <div class="module-info">
+          <div class="module-name">GPU & WebGL Shield</div>
+          <div class="module-desc">Spoofs GPU, card vendor, and renderer</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="webgl">
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="module-row">
+        <div class="module-info">
+          <div class="module-name">Navigator Mask</div>
+          <div class="module-desc">Masks CPU, RAM, platform and client hints</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="navigator">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="module-row">
+        <div class="module-info">
+          <div class="module-name">Screen & Viewport</div>
+          <div class="module-desc">Spoofs monitor and window client dimensions</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="screen">
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="module-row">
+        <div class="module-info">
+          <div class="module-name">Canvas Farbling</div>
+          <div class="module-desc">Adds tiny noise to pixel readout API calls</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="canvas">
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="module-row">
+        <div class="module-info">
+          <div class="module-name">Audio Guard</div>
+          <div class="module-desc">Scrambles audio buffer waveforms</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="audio">
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="module-row">
+        <div class="module-info">
+          <div class="module-name">WebDriver Cleaner</div>
+          <div class="module-desc">Deletes browser automation hooks</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="webdriver">
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="module-row">
+        <div class="module-info">
+          <div class="module-name">Biometrics Protector</div>
+          <div class="module-desc">Guards and restricts camera access</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="biometrics">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="actions-row">
+      <button class="btn" id="exportReportBtn">Export Local Audit Report</button>
+      <button class="btn btn-accent" id="resetBtn">Reset Counter & Logs</button>
+    </div>
+    <div class="footer-sentiment">Anonymity is a right, not a privilege.</div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
