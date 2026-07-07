@@ -15,13 +15,23 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_start",
       "all_frames": true
     }
   ],
   "action": {
     "default_popup": "popup.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "anonyarmour@example.com",
+      "strict_min_version": "109.0"
+    }
   }
 }
