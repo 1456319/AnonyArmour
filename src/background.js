@@ -8,9 +8,49 @@ const defaultFilters = [
 
 chrome.runtime.onInstalled.addListener(() => {
   setupRules();
-  // Initialize storage logs
-  chrome.storage.local.set({ logs: [], blockCount: 0, leakCount: 0 });
+  // Initialize storage logs and settings defaults
+  const defaults = {
+    webgl: true,
+    navigator: true,
+    canvas: true,
+    audio: true,
+    webdriver: true,
+    biometrics: true,
+    screen: true,
+    webrtc: true,
+    logs: [],
+    blockCount: 0,
+    leakCount: 0
+  };
+  chrome.storage.local.set(defaults, () => {
+    updateWebRTCPolicy(defaults);
+  });
 });
+
+chrome.runtime.onStartup.addListener(() => {
+  chrome.storage.local.get({ webrtc: true }, (items) => {
+    updateWebRTCPolicy(items);
+  });
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local' && changes.webrtc) {
+    updateWebRTCPolicy({ webrtc: changes.webrtc.newValue });
+  }
+});
+
+function updateWebRTCPolicy(settings) {
+  if (chrome.privacy && chrome.privacy.network && chrome.privacy.network.webRTCIPHandlingPolicy) {
+    const policy = settings.webrtc ? 'disable_non_proxied_udp' : 'default';
+    chrome.privacy.network.webRTCIPHandlingPolicy.set({ value: policy }, () => {
+      if (chrome.runtime.lastError) {
+        console.warn("Error setting WebRTC IP handling policy:", chrome.runtime.lastError.message);
+      } else {
+        console.log(`WebRTC IP handling policy set to: ${policy}`);
+      }
+    });
+  }
+}
 
 async function setupRules() {
   const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
@@ -45,7 +85,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       audio: true,
       webdriver: true,
       biometrics: true,
-      screen: true
+      screen: true,
+      webrtc: true
     }, (items) => {
       sendResponse(items);
     });

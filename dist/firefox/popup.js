@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const fields = ["webgl", "navigator", "canvas", "audio", "webdriver", "biometrics", "screen"];
+  const fields = ["webgl", "navigator", "canvas", "audio", "webdriver", "biometrics", "screen", "webrtc"];
   
   const blockCountEl = document.getElementById("blockCount");
   const leakCountEl = document.getElementById("leakCount");
@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
       webdriver: true,
       biometrics: true,
       screen: true,
+      webrtc: true,
       blockCount: 0,
       leakCount: 0
     }, (items) => {
