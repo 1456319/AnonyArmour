@@ -59,32 +59,33 @@ try {
       // =========================================================================
       try {
         const originalHardware = Object.getOwnPropertyDescriptor(Navigator.prototype, 'hardwareConcurrency')?.get;
-        Object.defineProperty(navigator, 'hardwareConcurrency', {
-          get: () => {
+        Object.defineProperty(Navigator.prototype, 'hardwareConcurrency', {
+          get: function() {
             logDetection("CPU Cores", config.navigator);
-            return config.navigator ? 8 : (originalHardware ? originalHardware.call(navigator) : 8);
+            return config.navigator ? 8 : (originalHardware ? originalHardware.call(this) : 8);
           }
         });
 
         const originalMemory = Object.getOwnPropertyDescriptor(Navigator.prototype, 'deviceMemory')?.get;
-        Object.defineProperty(navigator, 'deviceMemory', {
-          get: () => {
+        Object.defineProperty(Navigator.prototype, 'deviceMemory', {
+          get: function() {
             logDetection("Device RAM", config.navigator);
-            return config.navigator ? 8 : (originalMemory ? originalMemory.call(navigator) : 8);
+            return config.navigator ? 8 : (originalMemory ? originalMemory.call(this) : 8);
           }
         });
 
         const originalPlatform = Object.getOwnPropertyDescriptor(Navigator.prototype, 'platform')?.get;
-        Object.defineProperty(navigator, 'platform', {
-          get: () => {
+        Object.defineProperty(Navigator.prototype, 'platform', {
+          get: function() {
             logDetection("OS Platform", config.navigator);
-            return config.navigator ? "Win32" : (originalPlatform ? originalPlatform.call(navigator) : "Linux");
+            return config.navigator ? "Win32" : (originalPlatform ? originalPlatform.call(this) : "Linux");
           }
         });
         
         if (navigator.userAgentData) {
-          const originalUA = navigator.userAgentData.getHighEntropyValues;
-          navigator.userAgentData.getHighEntropyValues = function(hints) {
+          const uaDataProto = Object.getPrototypeOf(navigator.userAgentData);
+          const originalUA = uaDataProto.getHighEntropyValues;
+          uaDataProto.getHighEntropyValues = function(hints) {
             logDetection("UA Client Hints", config.navigator);
             if (config.navigator) {
               return Promise.resolve({
@@ -106,8 +107,9 @@ try {
         }
 
         if (navigator.storage && navigator.storage.estimate) {
-          const originalEstimate = navigator.storage.estimate;
-          navigator.storage.estimate = function() {
+          const storageProto = Object.getPrototypeOf(navigator.storage);
+          const originalEstimate = storageProto.estimate;
+          storageProto.estimate = function() {
             logDetection("Storage Quota Check", config.navigator);
             if (config.navigator) {
               return Promise.resolve({
@@ -173,10 +175,10 @@ try {
       // =========================================================================
       try {
         const originalWebdriver = Object.getOwnPropertyDescriptor(Navigator.prototype, 'webdriver')?.get;
-        Object.defineProperty(navigator, 'webdriver', {
-          get: () => {
+        Object.defineProperty(Navigator.prototype, 'webdriver', {
+          get: function() {
             logDetection("Webdriver Check", config.webdriver);
-            return config.webdriver ? false : (originalWebdriver ? originalWebdriver.call(navigator) : true);
+            return config.webdriver ? false : (originalWebdriver ? originalWebdriver.call(this) : true);
           }
         });
         if (config.webdriver) {
@@ -196,8 +198,9 @@ try {
       // =========================================================================
       try {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          const originalGetUserMedia = navigator.mediaDevices.getUserMedia;
-          navigator.mediaDevices.getUserMedia = function(constraints) {
+          const mediaDevicesProto = Object.getPrototypeOf(navigator.mediaDevices);
+          const originalGetUserMedia = mediaDevicesProto.getUserMedia;
+          mediaDevicesProto.getUserMedia = function(constraints) {
             logDetection("Biometric Request", config.biometrics);
             if (config.biometrics && constraints && constraints.video) {
               console.warn("[Shield] Blocking biometric camera stream request.");
@@ -213,44 +216,59 @@ try {
       // =========================================================================
       try {
         const originalScreenWidth = Object.getOwnPropertyDescriptor(Screen.prototype, 'width')?.get;
-        Object.defineProperty(screen, 'width', {
-          get: () => {
+        Object.defineProperty(Screen.prototype, 'width', {
+          get: function() {
             logDetection("Screen Width", config.screen);
-            return config.screen ? 1920 : (originalScreenWidth ? originalScreenWidth.call(screen) : window.innerWidth);
+            return config.screen ? 1920 : (originalScreenWidth ? originalScreenWidth.call(this) : window.innerWidth);
           }
         });
 
         const originalScreenHeight = Object.getOwnPropertyDescriptor(Screen.prototype, 'height')?.get;
-        Object.defineProperty(screen, 'height', {
-          get: () => {
+        Object.defineProperty(Screen.prototype, 'height', {
+          get: function() {
             logDetection("Screen Height", config.screen);
-            return config.screen ? 1080 : (originalScreenHeight ? originalScreenHeight.call(screen) : window.innerHeight);
+            return config.screen ? 1080 : (originalScreenHeight ? originalScreenHeight.call(this) : window.innerHeight);
           }
         });
 
-        Object.defineProperty(screen, 'availWidth', { get: () => config.screen ? 1920 : window.innerWidth });
-        Object.defineProperty(screen, 'availHeight', { get: () => config.screen ? 1040 : window.innerHeight });
+        const originalAvailWidth = Object.getOwnPropertyDescriptor(Screen.prototype, 'availWidth')?.get;
+        Object.defineProperty(Screen.prototype, 'availWidth', { get: function() { return config.screen ? 1920 : (originalAvailWidth ? originalAvailWidth.call(this) : window.innerWidth); } });
         
-        Object.defineProperty(window, 'innerWidth', { get: () => config.screen ? 1920 : window.outerWidth });
-        Object.defineProperty(window, 'innerHeight', { get: () => config.screen ? 1040 : window.outerHeight });
-        Object.defineProperty(window, 'outerWidth', { get: () => config.screen ? 1920 : window.outerWidth });
-        Object.defineProperty(window, 'outerHeight', { get: () => config.screen ? 1080 : window.outerHeight });
-        Object.defineProperty(window, 'devicePixelRatio', { get: () => config.screen ? 1 : window.devicePixelRatio });
+        const originalAvailHeight = Object.getOwnPropertyDescriptor(Screen.prototype, 'availHeight')?.get;
+        Object.defineProperty(Screen.prototype, 'availHeight', { get: function() { return config.screen ? 1040 : (originalAvailHeight ? originalAvailHeight.call(this) : window.innerHeight); } });
         
+        const originalInnerWidth = Object.getOwnPropertyDescriptor(Window.prototype, 'innerWidth')?.get;
+        Object.defineProperty(Window.prototype, 'innerWidth', { get: function() { return config.screen ? 1920 : (originalInnerWidth ? originalInnerWidth.call(this) : window.outerWidth); } });
+
+        const originalInnerHeight = Object.getOwnPropertyDescriptor(Window.prototype, 'innerHeight')?.get;
+        Object.defineProperty(Window.prototype, 'innerHeight', { get: function() { return config.screen ? 1040 : (originalInnerHeight ? originalInnerHeight.call(this) : window.outerHeight); } });
+
+        const originalOuterWidth = Object.getOwnPropertyDescriptor(Window.prototype, 'outerWidth')?.get;
+        Object.defineProperty(Window.prototype, 'outerWidth', { get: function() { return config.screen ? 1920 : (originalOuterWidth ? originalOuterWidth.call(this) : 1920); } });
+
+        const originalOuterHeight = Object.getOwnPropertyDescriptor(Window.prototype, 'outerHeight')?.get;
+        Object.defineProperty(Window.prototype, 'outerHeight', { get: function() { return config.screen ? 1080 : (originalOuterHeight ? originalOuterHeight.call(this) : 1080); } });
+
+        const originalPixelRatio = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio')?.get;
+        Object.defineProperty(Window.prototype, 'devicePixelRatio', { get: function() { return config.screen ? 1 : (originalPixelRatio ? originalPixelRatio.call(this) : 1); } });
+
+        const originalClientWidth = Object.getOwnPropertyDescriptor(Element.prototype, 'clientWidth')?.get;
         Object.defineProperty(Element.prototype, 'clientWidth', {
           get: function() {
-            if (this === document.documentElement || this === document.body) {
-              return config.screen ? 1920 : this.getBoundingClientRect().width;
+            if (config.screen && (this === document.documentElement || this === document.body)) {
+              return 1920;
             }
-            return this.getBoundingClientRect().width;
+            return originalClientWidth ? originalClientWidth.call(this) : this.getBoundingClientRect().width;
           }
         });
+
+        const originalClientHeight = Object.getOwnPropertyDescriptor(Element.prototype, 'clientHeight')?.get;
         Object.defineProperty(Element.prototype, 'clientHeight', {
           get: function() {
-            if (this === document.documentElement || this === document.body) {
-              return config.screen ? 1040 : this.getBoundingClientRect().height;
+            if (config.screen && (this === document.documentElement || this === document.body)) {
+              return 1040;
             }
-            return this.getBoundingClientRect().height;
+            return originalClientHeight ? originalClientHeight.call(this) : this.getBoundingClientRect().height;
           }
         });
       } catch (e) {}
